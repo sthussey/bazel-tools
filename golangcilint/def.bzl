@@ -8,8 +8,7 @@ def _golangcilint_impl(ctx):
         args.append("--config={}".format(ctx.file.config.short_path))
     else:
         args.append("--no-config")
-    args.extend(ctx.attr.paths)
-    out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
+    args.extend(ctx.files.paths)
     sdk = ctx.attr._go_sdk[GoSDK]
     substitutions = {
         "@@GOLANGCILINT_SHORT_PATH@@": shell.quote(ctx.executable._golangcilint.short_path),
@@ -20,7 +19,7 @@ def _golangcilint_impl(ctx):
     }
     ctx.actions.expand_template(
         template = ctx.file._runner,
-        output = out_file,
+        output = ctx.outputs.executable,
         substitutions = substitutions,
         is_executable = True,
     )
@@ -36,13 +35,10 @@ def _golangcilint_impl(ctx):
         transitive_depsets.append(default_runfiles.files)
 
     runfiles = ctx.runfiles(
+        files = ctx.files.paths,
         transitive_files = depset(transitive = transitive_depsets),
     )
-    return [DefaultInfo(
-        files = depset([out_file]),
-        runfiles = runfiles,
-        executable = out_file,
-    )]
+    return [DefaultInfo(runfiles = runfiles,)]
 
 _golangcilint = rule(
     implementation = _golangcilint_impl,
@@ -53,6 +49,7 @@ _golangcilint = rule(
         ),
         "paths": attr.label_list(
             doc = "Files to lint.",
+            allow_files = [".go"],
         ),
         "prefix": attr.string(
             mandatory = True,
@@ -76,7 +73,7 @@ _golangcilint = rule(
             default = "@go_sdk//:go_sdk",
         ),
     },
-    executable = True,
+    test = True,
 )
 
 def golangcilint(**kwargs):
