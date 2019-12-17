@@ -51,9 +51,8 @@ _golangcilint = rule(
             allow_single_file = True,
             doc = "Configuration file to use",
         ),
-        "paths": attr.string_list(
-            doc = "Directories to lint. <path>/... will recurse",
-            default = ["./..."],
+        "paths": attr.label_list(
+            doc = "Files to lint.",
         ),
         "prefix": attr.string(
             mandatory = True,
