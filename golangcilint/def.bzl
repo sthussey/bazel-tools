@@ -40,7 +40,7 @@ def _golangcilint_impl(ctx):
     )
     return [DefaultInfo(runfiles = runfiles,)]
 
-_golangcilint_test = rule(
+golangcilint_test = rule(
     implementation = _golangcilint_impl,
     attrs = {
         "config": attr.label(
@@ -75,12 +75,3 @@ _golangcilint_test = rule(
     },
     test = True,
 )
-
-def golangcilint_test(**kwargs):
-    tags = kwargs.get("tags", [])
-    if "manual" not in tags:
-        tags.append("manual")
-        kwargs["tags"] = tags
-    _golangcilint_test(
-        **kwargs
-    )
