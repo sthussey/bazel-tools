@@ -59,6 +59,10 @@ _golangcilint = rule(
             mandatory = True,
             doc = "Go import path of this project i.e. where in GOPATH you would put it. E.g. github.com/atlassian/bazel-tools",
         ),
+        "deps": attr.label_list(
+            mandatory = False,
+            doc = "Other Bazel targets this target depends upon.",
+        ),
         "_golangcilint": attr.label(
             default = "@com_github_atlassian_bazel_tools_golangcilint//:linter",
             cfg = "host",
